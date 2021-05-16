@@ -140,7 +140,7 @@ There I attempted the \textbf{Value Estimation}(including \textit{Greedy}, $\eps
 \paragraph*{Optimistic Initial Value}Namely the estimate value is initialized higher than the real value.
 \paragraph*{UCB} The choose policy is different with others. The agent choose action based on $A_t \doteq \mathop{argmax}\limits_{a}\left [Q_t(a)+c\sqrt{\frac{\ln{t}}{N_t(a)})}  \right ] $, which is proved in \nameref{Appendix A}.
 \paragraph*{Gradient method} It is based on the idea of gradient ascent and uses a preference function $H_t(a)$ to select actions. The proof and understanding are in \nameref{Appendix B}.
-\paragraph*{Thompson Sampling method} \textbf{// TODO}
+\paragraph*{Thompson Sampling method} Update q values using posterior probabilities based on Bayesian theory.
 \subsection{Experiments}
 
 \subsection{Analysis}

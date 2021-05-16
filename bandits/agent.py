@@ -98,6 +98,7 @@ class BetaAgent(Agent):
         self.n = bandit.n
         self.ts = ts
         self.model = pm.Model()
+        # k  is arm numbers
         with self.model:
             self._prior = pm.Beta('prior', alpha=np.ones(self.k),
                                   beta=np.ones(self.k), shape=(1, self.k),

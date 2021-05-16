@@ -8,13 +8,15 @@ from bandits.agent import BetaAgent
 
 
 class Environment(object):
-    def __init__(self, bandit, agents, label='Multi-Armed Bandit'):
-        self.bandit = bandit
+    def __init__(self, bandits, agents, label='Multi-Armed Bandit'):
+        self.bandits = bandits
         self.agents = agents
         self.label = label
 
     def reset(self):
-        self.bandit.reset()
+        for bandit in self.bandits:
+            bandit.reset()
+        # self.bandits.reset()
         for agent in self.agents:
             agent.reset()
 
@@ -30,7 +32,7 @@ class Environment(object):
                     sigma_ = None
                     # if i == 3 or i == 4:
                     #     sigma_ = 10
-                    reward, is_optimal = self.bandit.pull(action, sigma_)
+                    reward, is_optimal = self.bandits[i].pull(action, sigma_)
                     agent.observe(reward)
 
                     scores[t, i] += reward
@@ -61,16 +63,17 @@ class Environment(object):
         plt.show()
 
     def plot_beliefs(self):
+        # TODO 这个中的bandits还没改正确，别忘记了
         sns.set_context('talk')
         pal = sns.color_palette("cubehelix", n_colors=len(self.agents))
         plt.title(self.label + ' - Agent Beliefs')
 
         rows = 2
-        cols = int(self.bandit.k / 2)
+        cols = int(self.bandits.k / 2)
 
-        axes = [plt.subplot(rows, cols, i + 1) for i in range(self.bandit.k)]
-        for i, val in enumerate(self.bandit.action_values):
-            color = 'r' if i == self.bandit.optimal else 'k'
+        axes = [plt.subplot(rows, cols, i + 1) for i in range(self.bandits.k)]
+        for i, val in enumerate(self.bandits.action_values):
+            color = 'r' if i == self.bandits.optimal else 'k'
             axes[i].vlines(val, 0, 1, colors=color)
 
         for i, agent in enumerate(self.agents):
@@ -85,7 +88,7 @@ class Environment(object):
                 for j, _y in enumerate(y):
                     axes[j].plot(x, _y, color=pal[i], alpha=0.8)
 
-        min_p = np.argmin(self.bandit.action_values)
+        min_p = np.argmin(self.bandits.action_values)
         for i, ax in enumerate(axes):
             ax.set_xlim(0, 1)
             if i % cols != 0:
@@ -96,7 +99,7 @@ class Environment(object):
                 ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
                 ax.set_xticklabels(['0', '', '0.5', '', '1'])
             if i == int(cols / 2):
-                title = '{}-arm Bandit - Agent Estimators'.format(self.bandit.k)
+                title = '{}-arm Bandit - Agent Estimators'.format(self.bandits.k)
                 ax.set_title(title)
             if i == min_p:
                 ax.legend(self.agents)

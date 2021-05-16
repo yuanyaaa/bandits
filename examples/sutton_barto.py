@@ -5,8 +5,8 @@ by Sutton and Barto, 2nd ed. rev Oct2015.
 import sys
 # sys.path.append("./bandits")
 from bandits.environment import Environment
-from bandits.bandit import GaussianBandit
-from bandits.agent import Agent, GradientAgent
+from bandits.bandit import GaussianBandit, BernoulliBandit
+from bandits.agent import Agent, GradientAgent, BetaAgent
 from bandits.policy import (EpsilonGreedyPolicy, GreedyPolicy, UCBPolicy,
                             SoftmaxPolicy)
 
@@ -62,6 +62,25 @@ class GradientExample:
     ]
 
 
+class CompareExample:
+    label = 'Action'
+    n_arms = 10
+    n_trials = 1000
+    bandits = [GaussianBandit(n_arms), GaussianBandit(n_arms), GaussianBandit(n_arms), GaussianBandit(n_arms),
+               GaussianBandit(n_arms, mu=4), BernoulliBandit(n_arms, t=3 * n_trials)]
+    agents = [
+        Agent(bandits[0], GreedyPolicy(1)),
+        Agent(bandits[1], EpsilonGreedyPolicy(0.1, 1)),
+        Agent(bandits[2], GreedyPolicy(1), prior=5),
+        Agent(bandits[3], UCBPolicy(2)),
+        GradientAgent(bandits[4], SoftmaxPolicy(), alpha=0.1, baseline=False),
+        BetaAgent(bandits[5], GreedyPolicy())
+
+        # Agent(bandit, EpsilonGreedyPolicy(0.1, 1), prior=5),
+        # Agent(bandit, GreedyPolicy(1), prior=5)
+    ]
+
+
 if __name__ == '__main__':
     experiments = 500
     trials = 1000
@@ -69,8 +88,8 @@ if __name__ == '__main__':
     # example = EpsilonGreedyExample
     # example = OptimisticInitialValueExample
     # example = UCBExample
-    example = GradientExample
+    example = CompareExample
 
-    env = Environment(example.bandit, example.agents, example.label)
+    env = Environment(example.bandits, example.agents, example.label)
     scores, optimal = env.run(trials, experiments)
     env.plot_results(scores, optimal)
