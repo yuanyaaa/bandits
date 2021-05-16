@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 import scipy.stats as stats
+import seaborn as sns
+import time
 
 from bandits.agent import BetaAgent
 
@@ -26,7 +27,10 @@ class Environment(object):
             for t in range(trials):
                 for i, agent in enumerate(self.agents):
                     action = agent.choose()
-                    reward, is_optimal = self.bandit.pull(action)
+                    sigma_ = None
+                    # if i == 3 or i == 4:
+                    #     sigma_ = 10
+                    reward, is_optimal = self.bandit.pull(action, sigma_)
                     agent.observe(reward)
 
                     scores[t, i] += reward
@@ -37,19 +41,23 @@ class Environment(object):
 
     def plot_results(self, scores, optimal):
         sns.set_style('white')
-        sns.set_context('talk')
-        plt.subplot(2, 1, 1)
+        sns.set_context('notebook')
+        plt.figure(figsize=(20, 6.18))
+        plt.subplot(1, 2, 1)
         plt.title(self.label)
-        plt.plot(scores)
+        plt.plot(scores, alpha=0.7)
         plt.ylabel('Average Reward')
-        plt.legend(self.agents, loc=4)
-        plt.subplot(2, 1, 2)
+        plt.legend(self.agents, loc='best')
+        plt.subplot(1, 2, 2)
         plt.plot(optimal * 100)
         plt.ylim(0, 100)
         plt.ylabel('% Optimal Action')
         plt.xlabel('Time Step')
-        plt.legend(self.agents, loc=4)
+        plt.legend(self.agents, loc='best')
         sns.despine()
+        plt.tight_layout()
+        # plt.subplots_adjust(wspace=0, hspace=1)  # 调整子图间距
+        plt.savefig('../figures/' + time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()) + '.pdf', format='pdf')
         plt.show()
 
     def plot_beliefs(self):
@@ -60,7 +68,7 @@ class Environment(object):
         rows = 2
         cols = int(self.bandit.k / 2)
 
-        axes = [plt.subplot(rows, cols, i+1) for i in range(self.bandit.k)]
+        axes = [plt.subplot(rows, cols, i + 1) for i in range(self.bandit.k)]
         for i, val in enumerate(self.bandit.action_values):
             color = 'r' if i == self.bandit.optimal else 'k'
             axes[i].vlines(val, 0, 1, colors=color)
@@ -72,7 +80,7 @@ class Environment(object):
             else:
                 x = np.arange(0, 1, 0.001)
                 y = np.array([stats.beta.pdf(x, a, b) for a, b in
-                             zip(agent.alpha, agent.beta)])
+                              zip(agent.alpha, agent.beta)])
                 y /= np.max(y)
                 for j, _y in enumerate(y):
                     axes[j].plot(x, _y, color=pal[i], alpha=0.8)
@@ -87,7 +95,7 @@ class Environment(object):
             else:
                 ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
                 ax.set_xticklabels(['0', '', '0.5', '', '1'])
-            if i == int(cols/2):
+            if i == int(cols / 2):
                 title = '{}-arm Bandit - Agent Estimators'.format(self.bandit.k)
                 ax.set_title(title)
             if i == min_p:

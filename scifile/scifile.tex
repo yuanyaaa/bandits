@@ -1,0 +1,265 @@
+% Use only LaTeX2e, calling the article.cls class and 12-point type.
+
+\documentclass[12pt]{article}
+
+% Users of the {thebibliography} environment or BibTeX should use the
+% scicite.sty package, downloadable from *Science* at
+% www.sciencemag.org/about/authors/prep/TeX_help/ .
+% This package should properly format in-text
+% reference calls and reference-list numbers.
+
+\usepackage{scicite}
+
+% Use times if you have the font installed; otherwise, comment out the
+% following line.
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+% The preamble here sets up a lot of new/revised commands and
+% environments.  It's annoying, but please do *not* try to strip these
+% out into a separate .sty file (which could lead to the loss of some
+% information when we convert the file to other formats).  Instead, keep
+% them in the preamble of your main LaTeX source file.
+
+
+% The following parameters seem to provide a reasonable page setup.
+
+\topmargin 0.0cm
+\oddsidemargin 0.2cm
+\textwidth 16cm 
+\textheight 21cm
+\footskip 1.0cm
+
+
+%The next command sets up an environment for the abstract to your paper.
+
+\newenvironment{sciabstract}{%
+\begin{quote} \bf}
+{\end{quote}}
+\newtheorem{theorem}{theorem}
+
+
+% If your reference list includes text notes as well as references,
+% include the following line; otherwise, comment it out.
+
+\renewcommand\refname{References}
+
+% The following lines set up an environment for the last note in the
+% reference list, which commonly includes acknowledgments of funding,
+% help, etc.  It's intended for users of BibTeX or the {thebibliography}
+% environment.  Users who are hand-coding their references at the end
+% using a list environment such as {enumerate} can simply add another
+% item at the end, and it will be numbered automatically.
+
+\newcounter{lastnote}
+\newenvironment{scilastnote}{%
+\setcounter{lastnote}{\value{enumiv}}%
+\addtocounter{lastnote}{+1}%
+\begin{list}%
+{\arabic{lastnote}.}
+{\setlength{\leftmargin}{.22in}}
+{\setlength{\labelsep}{.5em}}}
+{\end{list}}
+
+
+% Include your paper's title here
+
+\title{A simple Research on Multi-Armed Bandit} 
+
+
+% Place the author information here.  Please hand-code the contact
+% information and notecalls; do *not* use \footnote commands.  Let the
+% author contact information appear immediately below the author names
+% as shown.  We would also prefer that you don't change the type-size
+% settings shown here.
+
+\author
+{Wang Pengyuan\\
+	\normalsize{Xi'an, Shaanxi, Northwestern Polytechnical University}\\
+	\\
+	\normalsize{E-mail: wpy3458@foxmail.com}\\
+}
+
+% Include the date command, but leave its argument blank.
+
+\date{}
+
+
+
+%%%%%%%%%%%%%%%%% END OF PREAMBLE %%%%%%%%%%%%%%%%
+
+
+
+\begin{document} 
+	
+
+% Double-space the manuscript.
+
+\baselineskip24pt
+
+% Make the title.
+
+\maketitle 
+
+
+
+% Place your abstract within the special {sciabstract} environment.
+
+\begin{sciabstract}
+  This document presents a number of hints about how to set up your
+  {\it Science\/} paper in \LaTeX\ .  We provide a template file,
+  \texttt{scifile.tex}, that you can use to set up the \LaTeX\ source
+  for your article.  An example of the style is the special
+  \texttt{\{sciabstract\}} environment used to set up the abstract you
+  see here.
+\end{sciabstract}
+
+
+
+% In setting up this template for *Science* papers, we've used both
+% the \section* command and the \paragraph* command for topical
+% divisions.  Which you use will of course depend on the type of paper
+% you're writing.  Review Articles tend to have displayed headings, for
+% which \section* is more appropriate; Research Articles, when they have
+% formal topical divisions at all, tend to signal them with bold text
+% that runs into the paragraph, for which \paragraph* is the right
+% choice.  Either way, use the asterisk (*) modifier, as shown, to
+% suppress numbering.
+
+\section{The Advantages and Disadvantages of each Compared to the Different Multi-Armed Bandit Methods}
+
+In the section, I used \textit{average reward}, \textit{optimal action}, \textit{percentage of top 3 superior action}, \textit{reward variance} and so on to analyze the different Multi-Armed Bandit Methods. There are two main parts: methods, experiments and analysis.
+\subsection{Methods}
+There I attempted the \textbf{Value Estimation}(including \textit{Greedy}, $\epsilon$-\textit{Greedy}, \textit{Optimistic Initial Value}, UCB methods), \textbf{Preference Estimation}(including \textit{Gradient method}), \textbf{Bayesian Estimation}(including Thompson Sampling method). The following are the brief introduction for their characters.
+
+\paragraph*{Greedy} For every state, the agent just select the action whose reward is highest.
+\paragraph*{$\epsilon$-Greedy} The method is an improvement on \textit{Greedy}. The only different is that the action will be chosen at random by the agent with $\epsilon$ probability. 
+\paragraph*{Optimistic Initial Value}Namely the estimate value is initialized higher than the real value.
+\paragraph*{UCB} The choose policy is different with others. The agent choose action based on $A_t \doteq \mathop{argmax}\limits_{a}\left [Q_t(a)+c\sqrt{\frac{\ln{t}}{N_t(a)})}  \right ] $, which is proved in \nameref{Appendix A}.
+\paragraph*{Gradient method} It is based on the idea of gradient ascent and uses a preference function $H_t(a)$ to select actions. The proof and understanding are in \nameref{Appendix B}.
+\paragraph*{Thompson Sampling method} \textbf{// TODO}
+\subsection{Experiments}
+
+\subsection{Analysis}
+
+
+
+
+\clearpage
+
+
+\section*{Appendix A}\label{Appendix A}
+Q: Why UCB formula is $A_t \doteq \mathop{argmax}\limits_{a}\left [Q_t(a)+c\sqrt{\frac{\ln{t}}{N_t(a)})}  \right ] $? Why not $A_t \doteq \mathop{argmax}\limits_{a}\left [Q_t(a)+c\frac{e^t-e^{-t}}{e^t+e^{-t}}  \right ] $? Why not others?
+
+A: In real life, we can not get the exact value of every action. Namely $\tilde{q} \approx q$, where $\tilde{q}$ is the value we estimated and $q$ is real value. There we can build the model $\tilde{q} - \triangle \le q \le \tilde{q} + \triangle$\cite{FengWei}. According the model, we are optimistic that each action can be rewarded with $\tilde{q} + \triangle$, which is called UCB. So we only need to find $\triangle$ to represent the UCB.
+
+There we need \textit{Chernoff-Hoeffding Bound}
+\begin{theorem}[Chernoff-Hoeffding Bound] $P\left \{\left |\tilde{p}-p  \right |\le \delta   \right \} \ge 1-2e^{-2n\delta^2}$
+\end{theorem}
+When $\delta$ get the value $\sqrt{2\ln t/n}$, we can get
+
+\begin{equation}
+	P\left \{\left |\tilde{p}-p  \right |\le \sqrt{2\ln t/n}   \right \} \ge 1-\frac{2}{T^4}
+\end{equation}
+
+Therefore, we can get the formula $\tilde{p} - \sqrt{2\ln t/n} \le p \le \tilde{p} + \sqrt{2\ln t/n}$ held with the probability of $1-\frac{2}{T^4}$. For each time, we let $p = \tilde{p} + \sqrt{2\ln t/n}$, which exactly is the \textit{Upper Confidence Bound}(UCB).
+
+
+\section*{Appendix B}\label{Appendix B}
+
+Q: For \textit{Gradient method}, why $H_t(a)$ can work?
+
+\paragraph*{My Understanding}
+For every action, $H_t(a)$ is updated by the following formula.
+
+
+\begin{equation}
+\begin{aligned}
+	H_{t+1}(A_t) \doteq H_t(A_t) + \alpha(R_t-\bar{R_t})(1-\pi_t(A_t)),\quad for \; A_t \\
+	H_{t+1}(a) \doteq H_t(a) + \alpha(R_t-\bar{R_t})\pi_t(a)),\quad for \; a \neq A_t
+\end{aligned}
+\end{equation}
+
+
+where $\bar{R_t}$ represents the average reward. I think it acts as a baseline. The agent choose the current action and get a reward $R_t$. If $R_t > \bar{R_t}$, $H_{t+1}(a)$ should grow up, or it should decline. The step size is controlled by $\alpha$. Just as the saying goes 'Learning is like sailing against the current, if you don't advance you fall back'. But I can not understand why $1-\pi_t(A_t)$ when updating the $H_{t+1}(A_t)$, so I proved it in next section.
+
+
+\paragraph*{Mathematical derivation}
+
+Because I can not understand it well, it is necessary for me to prove it.
+
+In the gradient ascent algorithm, we have 
+
+\begin{equation}
+	H_{t+1}(A_t) \doteq H_t(A_t) + \alpha \frac{\partial \mathbb{E}\left [ R_t \right ]   }{\partial H_t(a)} 
+\end{equation}
+We know that $\mathbb{E}\left [ R_t \right ] = \sum_{x}\pi_t(x)q_*(x)$, so
+
+\begin{equation}
+\begin{aligned}
+	\mathbb{E}\left [ R_t \right ] &= \sum_{x}\pi_t(x)q_*(x) \\
+	&=\frac{\partial}{\partial H_t(a)}[\sum_{x}\pi_t(x)q_*(x)] \\
+	&=\sum_{x}q_*(x)\frac{\partial\pi_t(x)}{\partial H_t(a)} \\
+	&=\sum_{x}(q_*(x)-B_t)\frac{\partial\pi_t(x)}{\partial H_t(a)}  \label{ERT}
+\end{aligned}
+\end{equation}
+
+The $B_t$ is the baseline. Why there $B_t$ is ok\cite{Zhanghuiwen}? 
+
+\begin{equation}
+\begin{aligned}
+	\sum_{x} B_{t} \frac{\partial \pi_{t}(x)}{\partial H_{t}(a)} &=B_{t} \sum_{x} \frac{\partial \pi_{t}(x)}{\partial H_{t}(a)} \\
+	&=B_{t} \frac{\partial\left[\sum_{x} \pi_{t}(x)\right]}{\partial H_{t}(a)} \\
+	&=B_{t} \frac{\partial[1]}{\partial H_{t}(a)}\\
+	&=0
+\end{aligned}
+\end{equation}
+Then we use $w(b)$ represents $H_t$, $b$ represents the every possible action. We get
+\begin{equation}
+	\begin{aligned}
+		\frac{\partial \pi_{t}(x)}{\partial H_{t}(a)} \Leftrightarrow \frac{\partial \pi(x)}{\partial w(a)} &=\frac{\partial}{\partial w(a)}[\pi(x)] \\
+		&=\frac{\partial}{\partial w(a)}\left[\frac{e^{w(x)}}{\sum_{b=1}^{k} e^{w(b)}}\right] \\
+		&=\frac{\frac{\partial e^{w(x)}}{\partial w(a)} \sum_{b=1}^{k} e^{w(b)}-e^{w(a)} e^{w(x)}}{\left(\sum_{b=1}^{k} e^{w(b)}\right)^{2}} \\
+		&=\frac{\mathbb{I}_{a=x} e^{w(x)} \sum_{b=1}^{k} e^{w(b)}-e^{w(a)} e^{w(x)}}{\left(\sum_{b=1}^{k} e^{w(b)}\right)^{2}} \\
+		&=\mathbb{I}_{a=x} \pi(x)-\pi(x) \pi(a) \\
+		&=\pi(x)\left(\mathbb{I}_{a=x}-\pi(a)\right) \label{wb}
+	\end{aligned}
+\end{equation}
+
+Bringing \ref{wb} into \ref{ERT}, we get 
+\begin{equation}
+	\begin{aligned}
+		\frac{\partial \mathbb{E}\left[R_{t}\right]}{\partial H_{t}(a)}&=\sum_{x}\left(q_{*}(x)-B_{t}\right) \pi_{t}(x)\left(\mathbb{I}_{a=x}-\pi_{t}(a)\right)
+	\end{aligned}
+\end{equation}
+That is why $1-\pi_t(A_t)$ for $A_t$.
+\newpage
+\bibliography{scibib}
+
+\bibliographystyle{Science}
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

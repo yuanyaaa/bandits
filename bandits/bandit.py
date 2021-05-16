@@ -6,6 +6,7 @@ class MultiArmedBandit(object):
     """
     A Multi-armed Bandit
     """
+
     def __init__(self, k):
         self.k = k
         self.action_values = np.zeros(k)
@@ -24,6 +25,7 @@ class GaussianBandit(MultiArmedBandit):
     Gaussian bandits model the reward of a given arm as normal distribution with
     provided mean and standard deviation.
     """
+
     def __init__(self, k, mu=0, sigma=1):
         super(GaussianBandit, self).__init__(k)
         self.mu = mu
@@ -34,9 +36,13 @@ class GaussianBandit(MultiArmedBandit):
         self.action_values = np.random.normal(self.mu, self.sigma, self.k)
         self.optimal = np.argmax(self.action_values)
 
-    def pull(self, action):
-        return (np.random.normal(self.action_values[action]),
-                action == self.optimal)
+    def pull(self, action, sigma_=None):
+        if sigma_ is None:
+            return (np.random.normal(self.action_values[action]),
+                    action == self.optimal)
+        else:
+            return (np.random.normal(self.action_values[action], sigma_),
+                    action == self.optimal)
 
 
 class BinomialBandit(MultiArmedBandit):
@@ -48,6 +54,7 @@ class BinomialBandit(MultiArmedBandit):
     In the bandit scenario, this can be used to approximate a discrete user
     rating or "strength" of response to a single event.
     """
+
     def __init__(self, k, n, p=None, t=None):
         super(BinomialBandit, self).__init__(k)
         self.n = n
@@ -55,8 +62,8 @@ class BinomialBandit(MultiArmedBandit):
         self.t = t
         self.model = pm.Model()
         with self.model:
-            self.bin = pm.Binomial('binomial', n=n*np.ones(k, dtype=np.int),
-                                   p=np.ones(k)/n, shape=(1, k), transform=None)
+            self.bin = pm.Binomial('binomial', n=n * np.ones(k, dtype=np.int),
+                                   p=np.ones(k) / n, shape=(1, k), transform=None)
         self._samples = None
         self._cursor = 0
 
@@ -96,5 +103,6 @@ class BernoulliBandit(BinomialBandit):
     In the bandit scenario, this can be used to approximate a hit or miss event,
     such as if a user clicks on a headline, ad, or recommended product.
     """
+
     def __init__(self, k, p=None, t=None):
         super(BernoulliBandit, self).__init__(k, 1, p=p, t=t)

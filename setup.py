@@ -7,8 +7,8 @@ setup(
     author_email="byron.galbraith@gmail.com",
     description="Algorithms for Multi-Armed Bandits",
     url="https://github.com/bgalbraith/bandits",
-    packages=[package for package in find_packages()
-              if package.startswith('bandits')],
+    # packages=[package for package in find_packages()
+    #          if package.startswith('bandits')],
     install_requires=[
         'numpy', 'scipy', 'matplotlib', 'seaborn', 'pymc3'
     ]

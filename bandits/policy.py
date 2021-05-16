@@ -19,11 +19,13 @@ class EpsilonGreedyPolicy(Policy):
     multiple actions are tied for best choice, then a random action from that
     subset is selected.
     """
-    def __init__(self, epsilon):
+    def __init__(self, epsilon, sigma):
         self.epsilon = epsilon
+        # sigma only used in __str__
+        self.sigma = sigma
 
     def __str__(self):
-        return '\u03B5-greedy (\u03B5={})'.format(self.epsilon)
+        return '\u03B5-greedy (\u03B5={}, sigma={})'.format(self.epsilon, self.sigma)
 
     def choose(self, agent):
         if np.random.random() < self.epsilon:
@@ -43,11 +45,12 @@ class GreedyPolicy(EpsilonGreedyPolicy):
     random selection. This can be seen as a special case of EpsilonGreedy where
     epsilon = 0 i.e. always exploit.
     """
-    def __init__(self):
-        super(GreedyPolicy, self).__init__(0)
+    def __init__(self, sigma):
+        # print(sigma)
+        super().__init__(0, sigma)
 
     def __str__(self):
-        return 'greedy'
+        return 'greedy(sigma={})'.format(self.sigma)
 
 
 class RandomPolicy(EpsilonGreedyPolicy):
@@ -78,7 +81,7 @@ class UCBPolicy(Policy):
     def choose(self, agent):
         exploration = np.log(agent.t+1) / agent.action_attempts
         exploration[np.isnan(exploration)] = 0
-        exploration = np.power(exploration, 1/self.c)
+        exploration = self.c * np.power(exploration, 0.5)
 
         q = agent.value_estimates + exploration
         action = np.argmax(q)
@@ -101,6 +104,8 @@ class SoftmaxPolicy(Policy):
     def choose(self, agent):
         a = agent.value_estimates
         pi = np.exp(a) / np.sum(np.exp(a))
+        # print('pi', pi)
         cdf = np.cumsum(pi)
+        # print('cdf:', cdf)
         s = np.random.random()
         return np.where(s < cdf)[0][0]
